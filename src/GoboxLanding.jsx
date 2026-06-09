@@ -82,6 +82,10 @@ const buildWaUrl = (mensaje) =>
     ? `${CONTACTO.whatsappUrl}?text=${encodeURIComponent(mensaje)}`
     : CONTACTO.whatsappUrl
 
+// ── URL mailto: con asunto y cuerpo prellenados ───────────────
+const buildMailtoUrl = () =>
+  `mailto:${CONTACTO.email}?subject=${encodeURIComponent(CONTACTO.emailSolicitudAsunto)}&body=${encodeURIComponent(CONTACTO.emailSolicitudCuerpo)}`
+
 // ── Estilos de formulario (module level para evitar recalcular) ─
 const inputCls = (err) =>
   `w-full rounded-xl border px-4 py-3 text-navy text-sm outline-none transition-all focus:ring-2 focus:ring-gold/30 focus:border-gold ${
@@ -475,7 +479,7 @@ export default function GoboxLanding() {
 
             {/* CTAs */}
             <div className="anim-slide-4 flex flex-col sm:flex-row gap-4 justify-center">
-              <a href={CONTACTO.whatsappUrl} target="_blank" rel="noopener noreferrer"
+              <a href={buildWaUrl(CONTACTO.mensajeDefault)} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gold text-navy font-bold rounded-xl hover:bg-gold-light transition-all duration-200 hover:scale-105 hover:shadow-[0_8px_32px_rgba(245,184,0,0.35)] text-sm sm:text-base">
                 <MessageCircle className="w-5 h-5" />{SITE_CONTENT.hero.cta1Label}
               </a>
@@ -668,7 +672,7 @@ export default function GoboxLanding() {
                         {accordion.tipo === 'texto-cta' && (
                           <div className="pt-2">
                             <p className="text-muted leading-relaxed text-sm sm:text-base mb-6">{accordion.texto}</p>
-                            <a href={CONTACTO.whatsappUrl} target="_blank" rel="noopener noreferrer"
+                            <a href={buildWaUrl(accordion.ctaMensajeWa ?? '')} target="_blank" rel="noopener noreferrer"
                               className="inline-flex items-center gap-2 px-6 py-3 bg-gold text-navy font-bold rounded-xl hover:bg-gold-light transition-all hover:scale-105 text-sm">
                               <MessageCircle className="w-4 h-4" />{accordion.ctaLabel}
                             </a>
@@ -743,6 +747,8 @@ export default function GoboxLanding() {
                   <div key={btn.texto} className={wrapClass}>
                     {btn.accion.tipo === 'scroll' ? (
                       <button onClick={() => irA(btn.accion.href)} className={`${baseClass} ${colorClass}`}>{contenido}</button>
+                    ) : btn.accion.tipo === 'email' ? (
+                      <a href={buildMailtoUrl()} className={`${baseClass} ${colorClass}`}>{contenido}</a>
                     ) : (
                       <a href={buildWaUrl(btn.accion.mensaje)} target="_blank" rel="noopener noreferrer" className={`${baseClass} ${colorClass}`}>{contenido}</a>
                     )}

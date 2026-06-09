@@ -16,6 +16,9 @@ export const CONTACTO = {
   whatsappUrl:    "https://wa.me/573115440330",
   email:          "Logistica@goboxsas.company",
   mensajeDefault: "Hola GOBOX 👋, me gustaría recibir información sobre sus servicios de logística y envíos.",
+  mensajeUnirse:  "Hola GOBOX 👋, estoy interesado en unirme a su red logística. Me gustaría recibir más información sobre cómo formar parte.",
+  emailSolicitudAsunto: "Solicitud de información - GOBOX S.A.S.",
+  emailSolicitudCuerpo: "Hola equipo GOBOX,\n\nMe gustaría recibir información sobre sus servicios de logística y envíos para mi empresa.\n\nQuedo atento,",
 }
 
 // ------------------------------------------------------------
@@ -260,7 +263,7 @@ export const BOTONES_CTA = [
   {
     icono:  "Mail",
     texto:  "Solicitar información",
-    accion: { tipo: "whatsapp", mensaje: CONTACTO.mensajeDefault },
+    accion: { tipo: "email" },
     estilo: "amarillo",
   },
   {
@@ -354,11 +357,12 @@ export const ACCORDIONS = [
     ],
   },
 
-  // ── Panel 4 — Únete a nuestra red ────────────────────────
+  // ── Panel 3 — Únete a nuestra red ────────────────────────
   {
-    titulo:   "Únete a nuestra red logística",
-    tipo:     "texto-cta",
-    texto:    "Si realizas envíos frecuentes a nivel nacional y buscas una solución más eficiente, económica y respaldada por expertos, GOBOX S.A.S. es el aliado que necesitas. Forma parte de nuestra red y descubre una nueva manera de gestionar la logística de tu negocio.",
-    ctaLabel: "Quiero unirme",
+    titulo:       "Únete a nuestra red logística",
+    tipo:         "texto-cta",
+    texto:        "Si realizas envíos frecuentes a nivel nacional y buscas una solución más eficiente, económica y respaldada por expertos, GOBOX S.A.S. es el aliado que necesitas. Forma parte de nuestra red y descubre una nueva manera de gestionar la logística de tu negocio.",
+    ctaLabel:     "Quiero unirme",
+    ctaMensajeWa: CONTACTO.mensajeUnirse,
   },
 ]
