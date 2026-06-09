@@ -12,7 +12,7 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   // Fase 1
-  Box, Menu, X, ChevronDown, MessageCircle, Mail, Phone, AtSign, ArrowDown,
+  Box, Menu, X, ChevronDown, MessageCircle, Mail, Phone, Instagram, ArrowDown,
   // Fase 3 — SERVICIOS_OPERATIVOS
   FileText, PackageSearch, Activity, Zap, MapPin, UserCheck, Route, BadgeDollarSign,
   // Fase 4 — ACCORDIONS (lista-iconos)
@@ -385,7 +385,7 @@ export default function GoboxLanding() {
                 </li>
               ))}
               <li className="ml-3">
-                <a href={CONTACTO.whatsappUrl} target="_blank" rel="noopener noreferrer"
+                <a href={buildWaUrl(CONTACTO.mensajeDefault)} target="_blank" rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-4 py-2 bg-wp text-white text-sm font-bold rounded-lg hover:bg-[#20bd5a] transition-all hover:scale-105">
                   <MessageCircle className="w-4 h-4" />WhatsApp
                 </a>
@@ -414,7 +414,7 @@ export default function GoboxLanding() {
               </li>
             ))}
             <li className="pt-2 pb-1">
-              <a href={CONTACTO.whatsappUrl} target="_blank" rel="noopener noreferrer"
+              <a href={buildWaUrl(CONTACTO.mensajeDefault)} target="_blank" rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 px-4 py-3 bg-gold text-navy font-bold rounded-lg hover:bg-gold-light transition-colors text-sm">
                 <MessageCircle className="w-4 h-4" />Contactar por WhatsApp
               </a>
@@ -438,20 +438,43 @@ export default function GoboxLanding() {
         <div className="absolute bottom-0 left-0 w-52 h-52"
           style={{ background: 'var(--amarillo)', clipPath: 'polygon(0 38%, 62% 100%, 0 100%)', opacity: 0.09 }} />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-36 md:py-28">
-          <div className="max-w-2xl lg:max-w-3xl">
-            <div className="anim-fade inline-flex items-center gap-2 bg-gold text-navy text-xs sm:text-sm font-bold px-4 py-2 rounded-full mb-7">
-              <Box className="w-3.5 h-3.5 flex-shrink-0" strokeWidth={2.5} />{SITE_CONTENT.hero.badge}
+          <div className="max-w-2xl lg:max-w-3xl mx-auto text-center">
+
+            {/* Logo SVG */}
+            <div className="anim-fade flex justify-center mb-5">
+              <img
+                src={import.meta.env.BASE_URL + 'logo-gobox.svg'}
+                alt="GOBOX S.A.S. - Logo"
+                className="w-28 sm:w-40 h-auto"
+                style={{ filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.25))' }}
+              />
             </div>
-            <h1 className="anim-slide-1 font-display text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold text-white leading-tight mb-6">
+
+            {/* Eslogan — texto grande y prominente, sin forma de botón */}
+            <div className="anim-slide-1 mb-8">
+              <p className="font-display text-2xl sm:text-3xl lg:text-4xl font-bold text-gold leading-tight">
+                {SITE_CONTENT.hero.badge}
+              </p>
+              <div className="h-0.5 w-24 bg-gold/50 rounded-full mx-auto mt-3" />
+            </div>
+
+            {/* Título principal */}
+            <h1 className="anim-slide-2 font-display text-4xl sm:text-5xl lg:text-[3.5rem] font-extrabold text-white leading-tight mb-6">
               {destacar(SITE_CONTENT.hero.titulo)}
             </h1>
-            <p className="anim-slide-2 text-lg sm:text-xl text-white/75 font-medium mb-4 leading-snug">
+
+            {/* Subtítulo */}
+            <p className="anim-slide-3 text-lg sm:text-xl text-white/75 font-medium mb-4 leading-snug">
               {SITE_CONTENT.hero.subtitulo}
             </p>
-            <p className="anim-slide-3 text-sm sm:text-base text-white/55 leading-relaxed mb-10 max-w-xl">
+
+            {/* Descripción */}
+            <p className="anim-slide-4 text-sm sm:text-base text-white/55 leading-relaxed mb-10 max-w-xl mx-auto">
               {SITE_CONTENT.hero.descripcion}
             </p>
-            <div className="anim-slide-4 flex flex-col sm:flex-row gap-4">
+
+            {/* CTAs */}
+            <div className="anim-slide-4 flex flex-col sm:flex-row gap-4 justify-center">
               <a href={CONTACTO.whatsappUrl} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gold text-navy font-bold rounded-xl hover:bg-gold-light transition-all duration-200 hover:scale-105 hover:shadow-[0_8px_32px_rgba(245,184,0,0.35)] text-sm sm:text-base">
                 <MessageCircle className="w-5 h-5" />{SITE_CONTENT.hero.cta1Label}
@@ -541,11 +564,12 @@ export default function GoboxLanding() {
                 const { className: animClass, style: animStyle } = slideQueHacemos(100 + i * 60)
                 return (
                   <div key={servicio.titulo} className={`h-full ${animClass}`} style={animStyle}>
-                    <div className="h-full bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 hover:border-gold/25 transition-all duration-300 group cursor-default">
-                      <div className="w-12 h-12 rounded-xl bg-gold flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-gold-light transition-all duration-300">
+                    <div className="h-full bg-white rounded-xl border border-gray-100 p-6 shadow-sm hover:shadow-xl hover:-translate-y-1.5 hover:border-gold/25 transition-all duration-300 group cursor-default flex flex-col">
+                      <div className="w-12 h-12 rounded-xl bg-gold flex items-center justify-center mb-4 flex-shrink-0 group-hover:scale-110 group-hover:bg-gold-light transition-all duration-300">
                         <Icono className="w-6 h-6 text-navy" strokeWidth={2} />
                       </div>
-                      <p className="text-navy font-semibold text-sm leading-snug">{servicio.titulo}</p>
+                      <p className="text-navy font-semibold text-sm leading-snug mb-2">{servicio.titulo}</p>
+                      <p className="text-muted text-xs leading-relaxed">{servicio.descripcion}</p>
                     </div>
                   </div>
                 )
@@ -730,7 +754,7 @@ export default function GoboxLanding() {
           <div {...slideContacto(250)}>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-white/50 text-sm">
               <a href={CONTACTO.instagramUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold transition-colors">
-                <AtSign className="w-4 h-4 text-gold flex-shrink-0" />{CONTACTO.instagram}
+                <Instagram className="w-4 h-4 text-gold flex-shrink-0" />Instagram · {CONTACTO.instagram}
               </a>
               <a href={CONTACTO.whatsappUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-gold transition-colors">
                 <Phone className="w-4 h-4 text-gold flex-shrink-0" />{CONTACTO.whatsapp}
@@ -1073,7 +1097,7 @@ export default function GoboxLanding() {
                 <li>
                   <a href={CONTACTO.instagramUrl} target="_blank" rel="noopener noreferrer"
                     className="flex items-center gap-2.5 text-white/50 hover:text-gold text-sm transition-colors">
-                    <AtSign className="w-4 h-4 text-gold flex-shrink-0" />{CONTACTO.instagram}
+                    <Instagram className="w-4 h-4 text-gold flex-shrink-0" />Instagram · {CONTACTO.instagram}
                   </a>
                 </li>
                 <li>
@@ -1104,7 +1128,7 @@ export default function GoboxLanding() {
           No interfiere con contenido en ningún breakpoint.
           ══════════════════════════════════════════════════════ */}
       <a
-        href={CONTACTO.whatsappUrl}
+        href={buildWaUrl(CONTACTO.mensajeDefault)}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Contactar por WhatsApp"

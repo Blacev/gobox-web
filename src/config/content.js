@@ -10,11 +10,12 @@
 // Todos los botones y el footer leen de aquí.
 // ------------------------------------------------------------
 export const CONTACTO = {
-  instagram:    "@gobox.sas.co",
-  instagramUrl: "https://instagram.com/gobox.sas.co",
-  whatsapp:     "311 544 0330",
-  whatsappUrl:  "https://wa.me/573115440330",
-  email:        "Logistica@goboxsas.company",
+  instagram:      "@gobox.sas.co",
+  instagramUrl:   "https://instagram.com/gobox.sas.co",
+  whatsapp:       "311 544 0330",
+  whatsappUrl:    "https://wa.me/573115440330",
+  email:          "Logistica@goboxsas.company",
+  mensajeDefault: "Hola GOBOX 👋, me gustaría recibir información sobre sus servicios de logística y envíos.",
 }
 
 // ------------------------------------------------------------
@@ -121,14 +122,46 @@ export const SITE_CONTENT = {
 // Agregar/quitar servicio = editar SOLO este array.
 // ------------------------------------------------------------
 export const SERVICIOS_OPERATIVOS = [
-  { icono: "FileText",        titulo: "Generación de guías de envío"                    },
-  { icono: "PackageSearch",   titulo: "Seguimiento permanente de cada paquete"          },
-  { icono: "Activity",        titulo: "Monitoreo en tiempo real de los despachos"       },
-  { icono: "Zap",             titulo: "Gestión y solución rápida de novedades"          },
-  { icono: "MapPin",          titulo: "Actualización de direcciones y datos de entrega" },
-  { icono: "UserCheck",       titulo: "Atención personalizada para cada envío"          },
-  { icono: "Route",           titulo: "Acompañamiento durante todo el proceso logístico"},
-  { icono: "BadgeDollarSign", titulo: "Optimización de costos de transporte"            },
+  {
+    icono:       "FileText",
+    titulo:      "Generación de guías de envío",
+    descripcion: "Creamos y gestionamos cada guía digitalmente, reduciendo errores y asegurando el control administrativo de cada despacho.",
+  },
+  {
+    icono:       "PackageSearch",
+    titulo:      "Seguimiento permanente de cada paquete",
+    descripcion: "Monitoreo constante de cada guía con reportes de estado y alertas inmediatas ante cualquier incidencia.",
+  },
+  {
+    icono:       "Activity",
+    titulo:      "Monitoreo en tiempo real de los despachos",
+    descripcion: "Visibilidad total del estado de tus envíos en todo momento para que siempre sepas dónde está tu mercancía.",
+  },
+  {
+    icono:       "Zap",
+    titulo:      "Gestión y solución rápida de novedades",
+    descripcion: "Identificamos y resolvemos incidencias operativas con rapidez para minimizar retrasos e impacto en tus clientes.",
+  },
+  {
+    icono:       "MapPin",
+    titulo:      "Actualización de direcciones y datos de entrega",
+    descripcion: "Corregimos datos del destinatario o destino antes de que el paquete llegue a una dirección incorrecta.",
+  },
+  {
+    icono:       "UserCheck",
+    titulo:      "Atención personalizada para cada envío",
+    descripcion: "Un asesor dedicado gestiona tus consultas y reclamos sin derivarte a múltiples canales de servicio.",
+  },
+  {
+    icono:       "Route",
+    titulo:      "Acompañamiento durante todo el proceso logístico",
+    descripcion: "Estamos contigo desde la generación de la guía hasta la entrega exitosa, coordinando directamente con la transportadora.",
+  },
+  {
+    icono:       "BadgeDollarSign",
+    titulo:      "Optimización de costos de transporte",
+    descripcion: "Consolidamos envíos y negociamos condiciones que te dan acceso a tarifas más competitivas dentro de nuestra red.",
+  },
 ]
 
 // ------------------------------------------------------------
@@ -227,7 +260,7 @@ export const BOTONES_CTA = [
   {
     icono:  "Mail",
     texto:  "Solicitar información",
-    accion: { tipo: "scroll", href: "#cotizador" },
+    accion: { tipo: "whatsapp", mensaje: CONTACTO.mensajeDefault },
     estilo: "amarillo",
   },
   {
@@ -251,7 +284,7 @@ export const BOTONES_CTA = [
   {
     icono:  "MessageCircle",
     texto:  "Contactar por WhatsApp",
-    accion: { tipo: "whatsapp", mensaje: "" },
+    accion: { tipo: "whatsapp", mensaje: CONTACTO.mensajeDefault },
     estilo: "verde",
   },
 ]
@@ -308,40 +341,7 @@ export const ACCORDIONS = [
     ],
   },
 
-  // ── Panel 2 — Nuestros servicios ─────────────────────────
-  {
-    titulo: "Nuestros servicios",
-    tipo:   "lista-iconos",
-    items: [
-      {
-        icono:       "FileText",
-        titulo:      "Gestión y emisión de guías",
-        descripcion: "Generamos y gestionamos cada guía de envío, con control administrativo y digital de cada despacho, reduciendo errores operativos.",
-      },
-      {
-        icono:       "PackageSearch",
-        titulo:      "Seguimiento personalizado",
-        descripcion: "Monitoreo constante de cada guía, reportes de estado y alertas ante cualquier incidencia.",
-      },
-      {
-        icono:       "Truck",
-        titulo:      "Coordinación de recojos",
-        descripcion: "Programación eficiente de recojos, coordinación directa con transportadoras y optimización de tiempos.",
-      },
-      {
-        icono:       "Headphones",
-        titulo:      "Atención al cliente y soporte",
-        descripcion: "Atención personalizada, gestión de reclamos y soporte continuo.",
-      },
-      {
-        icono:       "TrendingDown",
-        titulo:      "Optimización de costos",
-        descripcion: "Consolidación estratégica de envíos, negociación con transportadoras y reducción de costos logísticos para nuestros clientes.",
-      },
-    ],
-  },
-
-  // ── Panel 3 — ¿A quiénes atendemos? ──────────────────────
+  // ── Panel 2 — ¿A quiénes atendemos? ──────────────────────
   {
     titulo: "¿A quiénes atendemos?",
     tipo:   "checks",
