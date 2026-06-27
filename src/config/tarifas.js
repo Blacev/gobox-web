@@ -1,6 +1,6 @@
 // ============================================================
-// GOBOX S.A.S. — Tarifas Coordinadora (Calculadora Fase 6)
-// Fuente: GOBOX_Tarifas_Coordinadora.xlsx › Parametros_Calculadora
+// GOBOX S.A.S. — Tarifas Coordinadora (Calculadora)
+// Origen: Bogotá D.C.
 //
 // REGLA: NUNCA hardcodear números en las funciones de cálculo.
 // Toda tarifa, porcentaje o constante vive SOLO en este objeto.
@@ -9,12 +9,11 @@
 
 export const TARIFAS_CONFIG = {
 
-  // Última actualización de tarifas (se muestra en la UI)
-  vigencia: "2025",
+  vigencia: "2025-2026",
+  origen:   "Bogotá D.C.",
 
   // ----------------------------------------------------------
   // ZONAS DE DESTINO
-  // código → nombre legible para el <select>
   // ----------------------------------------------------------
   zonas: {
     L: "Local (misma ciudad)",
@@ -27,23 +26,21 @@ export const TARIFAS_CONFIG = {
 
   // ----------------------------------------------------------
   // 1) FLETE FIJO — Documentos y Paquetes (1–5 kg)
-  // docsPaquetes[peso_kg][zona] → valor en COP
   // ----------------------------------------------------------
   docsPaquetes: {
-    1: { L: 6950,  R: 8400,  N: 15350, Z: 19450, O: 22900, E: 36500 },
-    2: { L: 9300,  R: 11350, N: 18900, Z: 24850, O: 30000, E: 45800 },
+    1: { L: 8040,  R: 9330,  N: 15920, Z: 22990, O: 24610, E: 37630 },
+    2: { L: 8040,  R: 9330,  N: 15920, Z: 22990, O: 24610, E: 37630 },
     3: { L: 11450, R: 14350, N: 22700, Z: 30000, O: 36500, E: 54850 },
-    4: { L: 14350, R: 17050, N: 26350, Z: 35950, O: 44400, E: 64050 },
-    5: { L: 16750, R: 19650, N: 28950, Z: 41250, O: 50850, E: 73100 },
+    4: { L: 14490, R: 17510, N: 26130, Z: 36830, O: 44060, E: 58690 },
+    5: { L: 14490, R: 17510, N: 26130, Z: 36830, O: 44060, E: 58690 },
   },
 
   // ----------------------------------------------------------
   // 2) FLETE VARIABLE — Documentos y Paquetes
-  // estandar → zonas L, R, N, Z, O  |  especial → zona E
+  // 1% plano sobre el valor declarado, todas las zonas, sin mínimo.
   // ----------------------------------------------------------
   fleteVariableDocs: {
-    estandar: { porcentaje: 0.01, minimo: 580 },
-    especial: { porcentaje: 0.02, minimo: 865 },
+    todas: { porcentaje: 0.01, minimo: 0 },
   },
 
   // ----------------------------------------------------------
@@ -55,15 +52,7 @@ export const TARIFAS_CONFIG = {
   },
 
   // ----------------------------------------------------------
-  // 4) CARGA AÉREA (por trayecto)
-  // ----------------------------------------------------------
-  cargaAerea: {
-    trayecto1: { base6kg: 82000,  kgAdicional: 12750, varPorcentaje: 0.02, varMinimo: 790 },
-    trayecto2: { base6kg: 153400, kgAdicional: 14600, varPorcentaje: 0.02, varMinimo: 790 },
-  },
-
-  // ----------------------------------------------------------
-  // 5) RADICACIÓN DE DOCUMENTOS [zona]
+  // 4) RADICACIÓN DE DOCUMENTOS [zona]
   // ----------------------------------------------------------
   radicacionDocs: {
     primerDocumento: { L: 11120, R: 13460, N: 24580, Z: 31140, O: 33940, E: 54120 },
@@ -71,7 +60,7 @@ export const TARIFAS_CONFIG = {
   },
 
   // ----------------------------------------------------------
-  // 6) FIRMA DE DOCUMENTOS [zona]
+  // 5) FIRMA DE DOCUMENTOS [zona]
   // ----------------------------------------------------------
   firmaDocs: {
     primerDocumento: { L: 13900, R: 16800, N: 30700, Z: 38900, O: 42400, E: 67600 },
@@ -79,21 +68,21 @@ export const TARIFAS_CONFIG = {
   },
 
   // ----------------------------------------------------------
-  // 7) CONSTANTES DE CÁLCULO
+  // 6) CONSTANTES DE CÁLCULO
   // ----------------------------------------------------------
   constantes: {
-    divisorPesoVolumen:      2500,   // (Largo × Ancho × Alto cm) / 2500
-    pesoMinimoMercanciaKg:     30,   // mercancía se liquida mínimo 30 kg
-    pesoMaximoDocsPaquetesKg:   5,
-    valorMaxDeclaradoDocs:  200000,
-    pesoMaxCargaAereaKg:       70,
+    divisorPesoVolumen:        2500,   // (Largo × Ancho × Alto cm) / 2500
+    pesoMinimoMercanciaKg:       30,   // mercancía se liquida mínimo 30 kg
+    pesoMaximoDocsPaquetesKg:     5,
+    aristaMaxDocs12kgCm:         50,
+    valorMaxDeclaradoDocs:   200000,
   },
 
   // ----------------------------------------------------------
-  // 8) MERCANCÍA (+5 kg) — valor por kilo
+  // 7) MERCANCÍA (+5 kg) — valor por kilo
   // ----------------------------------------------------------
   mercancia: {
-    valorPorKiloDefault: 1055,
+    valorPorKiloDefault: 1176,
     notaAsesor: "El valor por kilo depende de la ruta origen-destino. Confirma la tarifa exacta con un asesor de GOBOX.",
   },
 }

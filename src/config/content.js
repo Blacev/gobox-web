@@ -366,3 +366,15 @@ export const ACCORDIONS = [
     ctaMensajeWa: CONTACTO.mensajeUnirse,
   },
 ]
+
+// ------------------------------------------------------------
+// CAJAS DE REFERENCIA (Cotizador — Mercancía)
+// Al hacer clic en una tarjeta, auto-rellena Largo/Ancho/Alto.
+// Agregar o editar medidas: solo aquí.
+// ------------------------------------------------------------
+export const CAJAS_REFERENCIA = [
+  { nombre: "Libro",                  largo: 22,  ancho: 16,  alto: 11 },
+  { nombre: "Par de zapatos",         largo: 33,  ancho: 15,  alto: 16 },
+  { nombre: "Freidora / Mini Nevera", largo: 50,  ancho: 38,  alto: 42 },
+  { nombre: 'Televisor 65"',          largo: 164, ancho: 100, alto: 20 },
+]

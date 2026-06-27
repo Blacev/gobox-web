@@ -22,12 +22,15 @@ import {
   Check,
   // Fase 5 — BOTONES_CTA
   Calendar, UserPlus, Calculator,
+  // Cotizador — cajas de referencia
+  Package,
 } from 'lucide-react'
 import {
   SITE_CONTENT, CONTACTO, NAV_LINKS,
   SERVICIOS_OPERATIVOS,
   ACCORDIONS,
   COMPROMISO, CTA_SECTION, BOTONES_CTA,
+  CAJAS_REFERENCIA,
 } from './config/content'
 import { TARIFAS_CONFIG } from './config/tarifas'
 
@@ -45,7 +48,6 @@ const ICONOS = {
 const TIPOS_SERVICIO = [
   { id: 'docs-paquetes', label: 'Docs y Paquetes' },
   { id: 'mercancia',     label: 'Mercancía +5 kg' },
-  { id: 'carga-aerea',   label: 'Carga Aérea'     },
   { id: 'radicacion',    label: 'Radicación'       },
   { id: 'firma',         label: 'Firma de Docs'    },
 ]
@@ -56,9 +58,8 @@ const CAMPOS_INICIALES = {
   'docs-paquetes': { zona: 'N', peso: '1', valorDeclarado: '' },
   'mercancia': {
     tipoEnvio: 'nacional', pesoReal: '', largo: '', ancho: '', alto: '',
-    valorDeclarado: '', valorPorKilo: String(TARIFAS_CONFIG.mercancia.valorPorKiloDefault),
+    valorDeclarado: '',
   },
-  'carga-aerea': { trayecto: 'trayecto1', pesoReal: '', valorDeclarado: '' },
   'radicacion':  { zona: 'N', copias: '0' },
   'firma':       { zona: 'N', copias: '0' },
 }
@@ -102,8 +103,7 @@ const calcularCotizacion = (tipo, campos) => {
     const pesoNum       = Number(campos.peso)
     const valNum        = Number(campos.valorDeclarado)
     const fleteFijo     = T.docsPaquetes[pesoNum][campos.zona]
-    const cfgVar        = campos.zona === 'E' ? T.fleteVariableDocs.especial : T.fleteVariableDocs.estandar
-    const fleteVariable = Math.max(cfgVar.porcentaje * valNum, cfgVar.minimo)
+    const fleteVariable = T.fleteVariableDocs.todas.porcentaje * valNum
     return {
       fleteFijo, fleteVariable,
       total: fleteFijo + fleteVariable,
@@ -119,7 +119,7 @@ const calcularCotizacion = (tipo, campos) => {
     const pr            = Number(campos.pesoReal)
     const pv            = (Number(campos.largo) * Number(campos.ancho) * Number(campos.alto)) / T.constantes.divisorPesoVolumen
     const pl            = Math.max(pr, pv, T.constantes.pesoMinimoMercanciaKg)
-    const vk            = Number(campos.valorPorKilo)
+    const vk            = TARIFAS_CONFIG.mercancia.valorPorKiloDefault
     const valNum        = Number(campos.valorDeclarado)
     const fleteFijo     = vk * pl
     const cfgVar        = campos.tipoEnvio === 'local' ? T.fleteVariableMercancia.local : T.fleteVariableMercancia.nacional
@@ -135,24 +135,6 @@ const calcularCotizacion = (tipo, campos) => {
       nota: T.mercancia.notaAsesor,
       pesoVolumen: pv,
       pesoLiquidar: pl,
-    }
-  }
-
-  if (tipo === 'carga-aerea') {
-    const pr            = Number(campos.pesoReal)
-    const cfg           = T.cargaAerea[campos.trayecto]
-    const fleteFijo     = pr <= 6
-      ? cfg.base6kg
-      : cfg.base6kg + (Math.ceil(pr) - 6) * cfg.kgAdicional
-    const fleteVariable = Math.max(cfg.varPorcentaje * Number(campos.valorDeclarado), cfg.varMinimo)
-    return {
-      fleteFijo, fleteVariable,
-      total: fleteFijo + fleteVariable,
-      desglose: [
-        { label: 'Flete fijo',     valor: fleteFijo     },
-        { label: 'Flete variable', valor: fleteVariable },
-      ],
-      nota: null, pesoVolumen: null, pesoLiquidar: null,
     }
   }
 
@@ -201,17 +183,6 @@ const validarCampos = (tipo, campos) => {
     if (!numOk(campos.ancho))          errs.ancho          = 'Ingresa el ancho'
     if (!numOk(campos.alto))           errs.alto           = 'Ingresa el alto'
     if (!numOk(campos.valorDeclarado)) errs.valorDeclarado = 'Ingresa el valor declarado'
-    if (!numOk(campos.valorPorKilo))   errs.valorPorKilo   = 'Ingresa el valor por kilo'
-  }
-
-  if (tipo === 'carga-aerea') {
-    const pr = Number(campos.pesoReal)
-    if (!numOk(campos.pesoReal)) {
-      errs.pesoReal = 'Ingresa el peso del envío'
-    } else if (pr > T.constantes.pesoMaxCargaAereaKg) {
-      errs.pesoReal = `Peso máximo para carga aérea: ${T.constantes.pesoMaxCargaAereaKg} kg`
-    }
-    if (!numOk(campos.valorDeclarado)) errs.valorDeclarado = 'Ingresa el valor declarado'
   }
 
   if (tipo === 'radicacion' || tipo === 'firma') {
@@ -238,11 +209,6 @@ const buildMensajeWa = (tipo, campos, resultado) => {
       const plStr     = Number.isInteger(pl) ? String(pl) : pl.toFixed(1)
       const tipoLabel = campos.tipoEnvio === 'local' ? 'Local' : 'Nacional'
       return `Hola GOBOX, tengo un envío de mercancía. Tipo: ${tipoLabel}. Peso real: ${campos.pesoReal} kg. Dimensiones: ${campos.largo}×${campos.ancho}×${campos.alto} cm. Peso a liquidar: ${plStr} kg. Valor declarado: ${formatCOP(Number(campos.valorDeclarado))}. Cotización estimada: ${tp}.`
-    }
-
-    case 'carga-aerea': {
-      const tLabel = campos.trayecto === 'trayecto1' ? 'Trayecto 1' : 'Trayecto 2'
-      return `Hola GOBOX, necesito carga aérea. ${tLabel}. Peso: ${campos.pesoReal} kg. Valor declarado: ${formatCOP(Number(campos.valorDeclarado))}. Cotización estimada: ${tp}.`
     }
 
     case 'radicacion':
@@ -290,10 +256,12 @@ export default function GoboxLanding() {
   const [panelAbierto, setPanelAbierto] = useState(null)
 
   // — Estado cotizador (Fase 6) ─────────────────────────────
-  const [cotizadorTipo, setCotizadorTipo] = useState('docs-paquetes')
-  const [campos,        setCampos]        = useState(CAMPOS_INICIALES['docs-paquetes'])
-  const [resultado,     setResultado]     = useState(null)
-  const [errores,       setErrores]       = useState({})
+  const [cotizadorTipo,    setCotizadorTipo]    = useState('docs-paquetes')
+  const [campos,           setCampos]           = useState(CAMPOS_INICIALES['docs-paquetes'])
+  const [resultado,        setResultado]        = useState(null)
+  const [errores,          setErrores]          = useState({})
+  const [cajaSeleccionada, setCajaSeleccionada] = useState(null)
+  const [resultadoKey,     setResultadoKey]     = useState(0)
 
   // — Hooks de visibilidad por sección ──────────────────────
   const [nosotrosRef,   nosotrosVisible]   = useInView(0.10)
@@ -337,6 +305,14 @@ export default function GoboxLanding() {
     setCampos(CAMPOS_INICIALES[tipo])
     setResultado(null)
     setErrores({})
+    setCajaSeleccionada(null)
+  }
+
+  // — Cotizador: auto-rellena dimensiones desde caja de referencia ─
+  const seleccionarCaja = (caja, idx) => {
+    setCampos(prev => ({ ...prev, largo: String(caja.largo), ancho: String(caja.ancho), alto: String(caja.alto) }))
+    setCajaSeleccionada(idx)
+    setErrores(prev => { const n = { ...prev }; delete n.largo; delete n.ancho; delete n.alto; return n })
   }
 
   // — Cotizador: actualiza un campo individual ──────────────
@@ -350,6 +326,7 @@ export default function GoboxLanding() {
     const errs = validarCampos(cotizadorTipo, campos)
     if (Object.keys(errs).length > 0) { setErrores(errs); return }
     setErrores({})
+    setResultadoKey(k => k + 1)
     setResultado(calcularCotizacion(cotizadorTipo, campos))
   }
 
@@ -883,22 +860,25 @@ export default function GoboxLanding() {
                     {errores.valorDeclarado && <p className={errCls}>{errores.valorDeclarado}</p>}
                   </div>
                   <div className="sm:col-span-2">
-                    <label className={labelCls}>Dimensiones del paquete (cm)</label>
+                    <label className={labelCls}>Dimensiones del paquete</label>
                     <div className="grid grid-cols-3 gap-3">
                       <div>
-                        <input type="number" min="0" step="1" placeholder="Largo"
+                        <label className="block text-muted text-xs mb-1">Largo (cm)</label>
+                        <input type="number" min="0" step="1" placeholder="0"
                           value={campos.largo} onChange={e => actualizarCampo('largo', e.target.value)}
                           className={inputCls(errores.largo)} />
                         {errores.largo && <p className={errCls}>{errores.largo}</p>}
                       </div>
                       <div>
-                        <input type="number" min="0" step="1" placeholder="Ancho"
+                        <label className="block text-muted text-xs mb-1">Ancho (cm)</label>
+                        <input type="number" min="0" step="1" placeholder="0"
                           value={campos.ancho} onChange={e => actualizarCampo('ancho', e.target.value)}
                           className={inputCls(errores.ancho)} />
                         {errores.ancho && <p className={errCls}>{errores.ancho}</p>}
                       </div>
                       <div>
-                        <input type="number" min="0" step="1" placeholder="Alto"
+                        <label className="block text-muted text-xs mb-1">Alto (cm)</label>
+                        <input type="number" min="0" step="1" placeholder="0"
                           value={campos.alto} onChange={e => actualizarCampo('alto', e.target.value)}
                           className={inputCls(errores.alto)} />
                         {errores.alto && <p className={errCls}>{errores.alto}</p>}
@@ -906,42 +886,28 @@ export default function GoboxLanding() {
                     </div>
                   </div>
                   <div className="sm:col-span-2">
-                    <label htmlFor="valorPorKilo" className={labelCls}>Valor por kilo (COP)</label>
-                    <input id="valorPorKilo" type="number" min="0" step="1"
-                      value={campos.valorPorKilo} onChange={e => actualizarCampo('valorPorKilo', e.target.value)}
-                      className={inputCls(errores.valorPorKilo)} />
-                    {errores.valorPorKilo && <p className={errCls}>{errores.valorPorKilo}</p>}
-                  </div>
-                </>)}
-
-                {/* ── Carga Aérea ── */}
-                {cotizadorTipo === 'carga-aerea' && (<>
-                  <div className="sm:col-span-2">
-                    <label htmlFor="trayecto" className={labelCls}>Trayecto</label>
-                    <select id="trayecto" value={campos.trayecto} onChange={e => actualizarCampo('trayecto', e.target.value)} className={inputCls()}>
-                      <option value="trayecto1">
-                        Trayecto 1 — base hasta 6 kg: {formatCOP(TARIFAS_CONFIG.cargaAerea.trayecto1.base6kg)}
-                      </option>
-                      <option value="trayecto2">
-                        Trayecto 2 — base hasta 6 kg: {formatCOP(TARIFAS_CONFIG.cargaAerea.trayecto2.base6kg)}
-                      </option>
-                    </select>
-                  </div>
-                  <div>
-                    <label htmlFor="pesoRealA" className={labelCls}>
-                      Peso real (kg, máx. {TARIFAS_CONFIG.constantes.pesoMaxCargaAereaKg})
-                    </label>
-                    <input id="pesoRealA" type="number" min="0" max={TARIFAS_CONFIG.constantes.pesoMaxCargaAereaKg} step="0.1" placeholder="Ej: 15"
-                      value={campos.pesoReal} onChange={e => actualizarCampo('pesoReal', e.target.value)}
-                      className={inputCls(errores.pesoReal)} />
-                    {errores.pesoReal && <p className={errCls}>{errores.pesoReal}</p>}
-                  </div>
-                  <div>
-                    <label htmlFor="valorDeclaradoA" className={labelCls}>Valor declarado (COP)</label>
-                    <input id="valorDeclaradoA" type="number" min="0" step="1" placeholder="Ej: 500000"
-                      value={campos.valorDeclarado} onChange={e => actualizarCampo('valorDeclarado', e.target.value)}
-                      className={inputCls(errores.valorDeclarado)} />
-                    {errores.valorDeclarado && <p className={errCls}>{errores.valorDeclarado}</p>}
+                    <p className="text-navy font-semibold text-sm mb-1">¿No estás seguro de las medidas?</p>
+                    <p className="text-muted text-xs leading-relaxed mb-3">
+                      Puedes seleccionar la medida de la caja que más se parezca al envío que quieres cotizar. Recuerda que son medidas de referencia.
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {CAJAS_REFERENCIA.map((caja, i) => (
+                        <button
+                          key={caja.nombre}
+                          type="button"
+                          onClick={() => seleccionarCaja(caja, i)}
+                          className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 text-center transition-all duration-200 ${
+                            cajaSeleccionada === i
+                              ? 'border-gold bg-gold/10'
+                              : 'border-gray-200 bg-surface hover:border-gold/50 hover:bg-gold/5'
+                          }`}
+                        >
+                          <Package className="w-5 h-5 text-gold flex-shrink-0" strokeWidth={1.5} />
+                          <span className="text-xs font-semibold leading-tight text-navy">{caja.nombre}</span>
+                          <span className="text-[10px] text-muted">{caja.largo}×{caja.ancho}×{caja.alto} cm</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </>)}
 
@@ -996,7 +962,7 @@ export default function GoboxLanding() {
 
               {/* ── Resultado ── */}
               {resultado && (
-                <div className="mt-6 anim-fade">
+                <div key={resultadoKey} className="mt-6 anim-fade">
                   <div className="bg-navy rounded-2xl p-6 sm:p-8">
 
                     {/* Total */}
@@ -1005,27 +971,19 @@ export default function GoboxLanding() {
                       {formatCOP(resultado.total)}
                     </p>
 
-                    {/* Desglose */}
-                    <div className="h-px bg-white/10 mb-4" />
-                    <div className="space-y-2.5 mb-4">
-                      {resultado.desglose.map(({ label, valor }) => (
-                        <div key={label} className="flex items-center justify-between gap-4">
-                          <span className="text-white/60 text-sm">{label}</span>
-                          <span className="text-white font-semibold text-sm tabular-nums flex-shrink-0">{formatCOP(valor)}</span>
+                    {/* Desglose — oculto para mercancía */}
+                    {cotizadorTipo !== 'mercancia' && (
+                      <>
+                        <div className="h-px bg-white/10 mb-4" />
+                        <div className="space-y-2.5 mb-4">
+                          {resultado.desglose.map(({ label, valor }) => (
+                            <div key={label} className="flex items-center justify-between gap-4">
+                              <span className="text-white/60 text-sm">{label}</span>
+                              <span className="text-white font-semibold text-sm tabular-nums flex-shrink-0">{formatCOP(valor)}</span>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-
-                    {/* Info de peso volumétrico (solo mercancía) */}
-                    {resultado.pesoLiquidar !== null && (
-                      <p className="text-white/35 text-xs mb-4 leading-relaxed">
-                        Peso volumen: {resultado.pesoVolumen.toFixed(2)} kg
-                        {' · '}
-                        Peso a liquidar: {Number.isInteger(resultado.pesoLiquidar)
-                          ? resultado.pesoLiquidar
-                          : resultado.pesoLiquidar.toFixed(2)} kg
-                        {' '}(máximo entre peso real, volumétrico y mínimo {TARIFAS_CONFIG.constantes.pesoMinimoMercanciaKg} kg)
-                      </p>
+                      </>
                     )}
 
                     {/* Nota asesor (solo mercancía) */}
